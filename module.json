@@ -291,14 +291,8 @@
                 }
             }
         },
-        "Builder Playlist":{
-            "menu": "Alignment",
-            "description": "构建播放列表\n要使用 ffprobe 查询关键帧, 耗时比较久\n=====================\nBuild Playlist",
-            "callback": "buildPlaylist",
-            "type": "Trigger"
-        },
         "Alignment Play":{
-            "menu": "Alignment",
+            "menu": "",
             "description": "设置 Index 和 Alignment time 后, 对齐播放\n=====================\nnAlignment Play",
             "callback": "alignmentPlay",
             "parameters" :{
@@ -323,7 +317,7 @@
             }
         },
         "Seek":{
-            "menu": "Alignment",
+            "menu": "",
             "callback": "alignmentSeek",
             "parameters" :{
                 "Seek to Time": {
