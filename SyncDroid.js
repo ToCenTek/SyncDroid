@@ -186,7 +186,7 @@ function playPause() {
 
 // seek to position_ms, delay
 function alignmentSeek(position){
-    local.send("/alignment/seek", position);
+    local.send("/seek", position);
 }
 
 // 设置音量
