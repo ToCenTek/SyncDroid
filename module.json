@@ -1,0 +1,684 @@
+{
+    "type": "OSC",
+    "name": "SyncDroid",
+    "path": "ToCenTek",
+    "version": "2.0",
+    "description": "",
+    "hasInput": true,
+    "hasOutput": true,
+    "alwaysShowValues": true,
+    "hideDefaultCommands": false,
+    "hideDefaultParameters": [
+        "splitArguments",
+        "autoFeedback",
+        "colorSendMode",
+        "booleanSendMode",
+        "autoAdd",
+        "useHierarchy",
+        "clearValues"
+    ],
+    "defaults": {
+        "autoAdd": false,
+        "splitArguments": true,
+        "autoFeedback": false,
+        "colorSendMode": "color",
+        "booleanSendMode": "Int",
+        "useHierarchy": false,
+        "OSC Input": {
+            "localPort": "12000"
+        },
+        "OSC Outputs": {
+            "OSC Output":{
+                "collapsed": true,
+                "local": false,
+                "remoteHost": "239.0.0.139",
+                "remotePort": 8000
+            }
+        }
+    },
+
+    "parameters": {
+    },
+
+    "values": {
+        "Discover": {
+            "type": "Trigger",
+            "description": "发现组播成员\n=====================\nDiscover Multicast Members"
+        },
+        "Get Playlist": {
+            "type": "Trigger",
+            "description": "构建播放列表\n要使用 ffprobe 查询关键帧, 耗时比较久\n=====================\nBuild Playlist"
+        },
+        "Alignment":{
+            "type": "Container",
+            "collapsed": true,
+            "Alignment Time":{
+                "type": "Integer",
+                "description": "设置对齐时间点, 单位: ms\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nAlignment time",
+                "default": 1102,
+                "min":1
+            },
+            "Index":{
+                "type": "Integer",
+                "description": "要播放的文件在列表中的索引\n=====================\nIndex",
+                "default": 0,
+                "min":0
+            },
+            "Alignment Play":{
+                "type": "Trigger",
+                "description": "设置 Index 和 Alignment time 后, 对齐准备\n=====================\nnAlignment Ready"
+            },
+
+            "File Name":{
+                "type": "String",
+                "description": "指定文件名\n=====================\nfilename",
+                "default": "4K_29.97-Chimei-inn-RoastDuck.mp4"
+            },
+            "Play File":{
+                "type": "Trigger",
+                "description": "播放指定文件\n=====================\nPlay File"
+            },
+            "isPaused":{
+                "type": "Boolean",
+                "description": "已暂停\n=====================\nPaused",
+                "readOnly": true
+            },
+            "Play|Pause":{
+                "type": "Trigger",
+                "description": "切换暂停/播放\n=====================\nPause/Play"
+            },
+
+            "Seek":{
+                "type": "Integer",
+                "description": "跳转到指定时间点(ms),\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nSeek",
+                "min":1,
+                "default": 13213
+            },
+            "isStopped":{
+                "type": "Boolean",
+                "description": "已停止\n=====================\nis Stopped",
+                "readOnly": true
+            },
+            "Stop":{
+                "type": "Trigger",
+                "description": "停止播放, 回到主界面\n=====================\nStop"
+            },
+            "Loop":{
+                "type": "Enum",
+                "description": "循环模式: All/One/Off\n--- : 查询当前模式\n=====================\nLoop Mode.",
+                "options": {
+                    "---": "---",
+                    "Play once and stop": 0,
+                    "Single loop": 1,
+                    "Playlist loop": 2,
+                    "Random": 3
+                }
+            },
+            "Volume":{
+                "type": "Float",
+                "description": "音量\n=====================\nVolume",
+                "default": 10.0,
+                "min":0.0,
+                "max":15.0
+            },
+            "isMute":{
+                "type": "Boolean",
+                "description": "静音\n=====================\nMute",
+                "default": false
+            },
+            "Performance":{
+                "type":"Boolean",
+                "description": "True = SurfaceView, 高性能模式\n支持主动立体, 不支持被动立体\nscrcpy 取不到画面(黑屏)\nFalse = TextureView, 调试模式, 性能略低\n可以被 scrcpy 操作屏幕, 支持 主动/被动立体\n================================",
+                "default": true
+            }
+        },
+        "Multicast Members":{
+            "type": "Container",
+            "collapsed": true,
+            "Members":{
+                "type": "String",
+                "description": "已加入的组播组成员\n=====================\nMulticast Group Member",
+                "default": "",
+                "multiline": true,
+                "readOnly": true
+            },
+            "Member IP":{
+                "type": "String",
+                "description": "要管理的组播组成员 IP\n=====================\nMulticast Group Member IP Address",
+                "default": "10.0.0.69"
+            },
+            "Manager":{
+                "type": "Enum",
+                "description": "使成员加入或离开组播组\n---: 查询成员在组情况\n====================\nMulticast Group Manager",
+                "options": {
+                    "---": "---",
+                    "Join": "join",
+                    "Leave": "leave"
+                }
+            },
+            "Message":{
+                "type": "String",
+                "description": "成员进出信息\n=====================\nMulticast Group Member Message",
+                "default": "",
+                "multiline": true,
+                "readOnly": true
+            }
+        },
+        "Power Control":{
+            "type": "Container",
+            "collapsed": true,
+            "Display ON":{
+                "type": "Trigger",
+                "description": "打开显示器\n需 CEC 支持\n====================="
+            },
+            "Display OFF":{
+                "type": "Trigger",
+                "description": "关闭显示器\n需 CEC 支持\n====================="
+            },
+            "Player Restart":{
+                "type": "Trigger",
+                "description": "重启播放器\n====================="
+            },
+            "Player Exit":{
+                "type": "Trigger",
+                "description": "退出播放器\n发送 /play 可重新启动\n也可以由保活机制启动\n====================="
+            },
+            "System Reboot":{
+                "type": "Trigger",
+                "description": "重启系统\n需 ROOT 权限\n=====================\nReboot"
+            },
+            "System Shutdown":{
+                "type": "Trigger",
+                "description": "关机\n需 ROOT 权限\n=====================\nShutdown"
+            },
+            "Schedule Reboot":{
+                "type": "String",
+                "description": "计划重启时间 HH:MM\n=====================\nSchedule Reboot",
+                "default": "12:00"
+            },
+            "Schedule Shutdown":{
+                "type": "String",
+                "description": "计划关机时间 HH:MM\n=====================\nSchedule Shutdown",
+                "default": "17:00"
+            },
+            "Schedule Power Clear":{ 
+                "type": "Trigger",
+                "description": "清除计划\n=====================\nSchedule Clear"
+            }
+
+
+        },
+        "Schedule Play":{
+            "type": "Container",
+            "collapsed": true,
+            "Schedule Start":{
+                "type": "String",
+                "description": "计划开始播放时间 HH:MM\n=====================\nSchedule Start",
+                "default": "09:00"
+            },
+            "Schedule Stop":{
+                "type": "String",
+                "description": "计划开始播放时间 HH:MM\n=====================\nSchedule Start",
+                "default": "17:00"
+            },
+            "Schedule Play Clear":{ 
+                "type": "Trigger",
+                "description": "清除计划\n=====================\nSchedule Clear"
+            }
+        }
+    },
+
+    "scripts": ["SyncDroid.js"],
+
+    "commands": {
+        "Members Discover": {
+            "menu": "Multicast",
+            "description": "发现组播成员\n=====================\nDiscover Multicast Members",
+            "callback": "discoverMulticastMembers",
+            "type": "Trigger"
+        },
+        "Members Manager":{
+            "menu": "Multicast",
+            "callback": "membersManager",
+            "parameters" :{
+                "IP Address": {
+                    "type": "String",
+                    "description": "IP地址",
+                    "default": "10.0.0.69"
+                },
+                "Action": {
+                    "type": "Enum",
+                    "description": "Join: 加入组播组, Leave: 离开组播组",
+                    "options": {
+                        "---": "---",
+                        "Join": "join",
+                        "Leave": "leave"
+                    }
+                }
+            }
+        },
+        "Listen Port":{
+            "menu": "Multicast",
+            "callback": "setPort",
+            "parameters" :{
+                "Port": {
+                    "type": "Integer",
+                    "description": "端口号, 默认: 12000",
+                    "default": 12000,
+                    "min":1
+                }
+            }
+        },
+        "Muticast Address":{
+            "menu": "Multicast",
+            "callback": "multicastAddress",
+            "parameters" :{
+                "Address": {
+                    "type": "String",
+                    "description": "组播地址, 默认: 239.0.0.139\n=====================\nMulticast Host",
+                    "default": "239.0.0.139"
+                }
+            }
+        },
+        "Muticast Port":{
+            "menu": "Multicast",
+            "callback": "multicastPort",
+            "parameters" :{
+                "Port": {
+                    "type": "Integer",
+                    "description": "组播端口, 默认: 8000\n注意: 修改组播端口需要重启播放器\n=====================\nMulticast Port",
+                    "default": 8000
+                }
+            }
+        },
+        "Builder Playlist":{
+            "menu": "Alignment",
+            "description": "构建播放列表\n要使用 ffprobe 查询关键帧, 耗时比较久\n=====================\nBuild Playlist",
+            "callback": "buildPlaylist",
+            "type": "Trigger"
+        },
+        "Alignment Play":{
+            "menu": "Alignment",
+            "description": "设置 Index 和 Alignment time 后, 对齐播放\n=====================\nnAlignment Play",
+            "callback": "alignmentPlay",
+            "parameters" :{
+                "Index": {
+                    "type": "Integer",
+                    "description": "要播放的文件在列表中的索引\n=====================\nIndex",
+                    "default": 0,
+                    "min":0
+                },
+                "Alignment Time":{
+                    "type": "Integer",
+                    "description": "设置对齐播放的对齐点, 单位: ms\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nAlignment play delay",
+                    "default": 1102,
+                    "min":1
+                },
+                "Alignment Delay":{
+                    "type": "Integer",
+                    "description": "设置对齐播放的延迟时间, 单位: ms\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nAlignment play delay",
+                    "default": 3304,
+                    "min":1
+                }
+            }
+        },
+        "Seek":{
+            "menu": "Alignment",
+            "callback": "alignmentSeek",
+            "parameters" :{
+                "Seek to Time": {
+                    "type": "Integer",
+                    "description": "跳转到指定时间点(ms)\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n注======================",
+                    "default": 16516,
+                    "min":1
+                }
+            }
+        },
+
+        "Play File":{
+            "menu": "",
+            "description": "播放指定文件\n=====================\nPlay File",
+            "callback": "playFile",
+            "parameters" :{
+                "File Name": {
+                    "type": "String",
+                    "description": "要播放的文件",
+                    "default": "4K_29.97-Chimei-inn-RoastDuck.mp4"
+                }
+            }
+        },
+        "Play|Pause":{
+            "menu": "",
+            "callback": "playPause",
+            "type": "Trigger"
+        },
+        "Pause":{
+            "menu": "",
+            "callback": "pause",
+            "parameters" :{
+                "isPaused": {
+                    "type": "Boolean",
+                    "description": "暂停播放",
+                    "default": false
+                }
+            }
+        },
+        "Stop":{
+            "menu": "",
+            "callback": "stopPlay",
+            "type": "Trigger"
+        },
+
+        "Get Playlist":{
+            "menu": "Playlist",
+            "callback": "getPlaylist",
+            "type": "Trigger"
+        },
+        "Set Loop":{
+            "menu": "Playlist",
+            "callback": "setLoop",
+            "parameters" :{
+                "Loop": {
+                    "type": "Enum",
+                    "description": "循环模式.\n--- : 查询当前模式\nLoop Mode.",
+                    "options": {
+                        "---": "---",
+                        "Play once and stop": 0,
+                        "Single loop": 1,
+                        "Playlist loop": 2,
+                        "Random": 3
+                    }
+                }
+            }
+        },
+        "Play Index":{
+            "menu": "Playlist",
+            "callback": "PlayIndex",
+            "parameters" :{
+                "Index": {
+                    "type": "Integer",
+                    "description": "播放指定索引的文件",
+                    "default": 0,
+                    "min":0
+                }
+            }
+        },
+        "Play Next":{
+            "menu": "Playlist",
+            "callback": "playNext",
+            "type": "Trigger"
+        },
+        "Play Prev":{
+            "menu": "Playlist",
+            "callback": "playPrev",
+            "type": "Trigger"
+        },
+        "Playlist Add":{
+            "menu": "Playlist",
+            "callback": "playlistAdd",
+            "parameters" :{
+                "File Name": {
+                    "type": "String",
+                    "description": "要添加到播放列表的文件名",
+                    "default": "4K_29.97-Chimei-inn-RoastDuck.mp4"
+                }
+            }
+        },
+        "Playlist Remove":{
+            "menu": "Playlist",
+            "callback": "playlistRemove",
+            "parameters" :{
+                "Index": {
+                    "type": "Integer",
+                    "description": "要删除的索引",
+                    "default": 0,
+                    "min":0
+                }
+            }
+        },
+        "Playlist Clear":{
+            "menu": "Playlist",
+            "callback": "playlistClear",
+            "type": "Trigger"
+        },
+        "Playlist Reload":{
+            "menu": "Playlist",
+            "description": "重新扫描视频(固定排序)",
+            "callback": "playlistReload",
+            "type": "Trigger"
+        },
+        "Playlist Directory Check":{
+            "menu": "Playlist",
+            "description": "查看视频目录",
+            "callback": "playlistDirectoryCheck",
+            "type": "Trigger"
+        },
+
+        "Volume":{
+            "menu": "",
+            "callback": "setVolume",
+            "parameters" :{
+                "Volume": {
+                    "type": "Float",
+                    "description": "音量, 0-100",
+                    "default": 10,
+                    "min":0,
+                    "max":15
+                }
+            }
+        },
+        "isMute":{
+            "menu": "",
+            "callback": "setMute",
+            "parameters" :{
+                "Mute": {
+                    "type": "Boolean",
+                    "description": "静音\n=================",
+                    "default": false
+                }
+            }
+        },
+        "Speed":{
+            "menu": "",
+            "callback": "setSpeed",
+            "parameters" :{
+                "Speed": {
+                    "type": "Float",
+                    "description": "播放速度, 0.25-4.0\n不要在同步时使用, \n温和的同步算法跟不上任意改变的速度",
+                    "default": 1,
+                    "min":0.25,
+                    "max":4
+                }
+            }
+        },
+        
+        "Power Control":{
+            "menu": "Power Control",
+            "callback": "powerControl",
+            "parameters" :{
+                "Power Control": {
+                    "type": "Enum",
+                    "description": "电源控制.\n--- : 查询当前模式\nPower Mode.",
+                    "options": {
+                        "Display ON": "on",
+                        "Display OFF": "off",
+                        "Player Restart": "restart",
+                        "Player Exit": "exit",
+                        "System Reboot": "reboot",
+                        "System Shutdown": "shutdown"
+                    }
+                }
+            }
+        },
+        "Schedule Start":{
+            "menu":"Schedule Play",
+            "callback":"scheduleStart",
+            "parameters":{
+                "Time": {
+                    "type": "String",
+                    "description": "定时播放开始时间, 格式: HH:MM\n=================",
+                    "default": "09:00"
+                }
+            }
+        },
+        "Schedule Stop":{
+            "menu":"Schedule Play",
+            "callback":"scheduleStop",
+            "parameters":{
+                "Time": {
+                    "type": "String",
+                    "description": "定时播放结束时间, 格式: HH:MM\n=================",
+                    "default": "09:00"
+                }
+            }
+        },
+        "Schedule Play Clear":{
+            "menu":"Schedule Play",
+            "callback":"schedulePlayClear",
+            "type": "Trigger"
+        },
+        "Schedule Reboot":{
+            "menu":"Power Control", 
+            "callback":"scheduleReboot",
+            "parameters":{
+                "Time": {
+                    "type": "String",
+                    "description": "定时重启时间, 格式: HH:MM\n=================",
+                    "default": "09:00"
+                }
+            }
+        },
+        "Schedule Shutdown":{
+            "menu":"Power Control", 
+            "callback":"scheduleShutdown",
+            "parameters":{
+                "Time": {
+                    "type": "String",
+                    "description": "定时关机时间, 格式: HH:MM\n=================",
+                    "default": "17:00"
+                }
+            }
+        },
+        "Schedule Shutdown Clear":{
+            "menu":"Power Control", 
+            "callback":"schedulePowerClear",
+            "type": "Trigger"
+        },
+        "Watchdog":{
+            "menu": "Configuration",
+            "callback": "watchDog",
+            "parameters" :{
+                "Watchdog": {
+                    "type": "Boolean",
+                    "description": "是否启用看门狗\n看门狗每 30 秒检查播放器状态,\n当播放器未响应时, 播放器将重启.\n=================",
+                    "default": true
+                }
+            }
+        },
+        "Keep Alive Check":{
+            "menu": "Configuration",
+            "description": "查看保活间隔和健康检查间隔",
+            "callback": "keepAliveCheck",
+            "type": "Trigger"
+        },
+        "Keep Alive - Alarm":{
+            "menu": "Configuration",
+            "callback": "keepAliveAlarm",
+            "parameters" :{
+                "Second": {
+                    "type": "Integer",
+                    "description": "MainActivity 保活间隔秒数\n=================",
+                    "default": 60,
+                    "min":5,
+                    "max":600
+                }
+            }
+        },
+        "Keep Alive - WorkManager":{
+            "menu": "Configuration",
+            "callback": "keepAliveWorKmanager",
+            "parameters" :{
+                "Minute": {
+                    "type": "Integer",
+                    "description": "WorkManager 保活间隔分钟数\n=================",
+                    "default": 30,
+                    "min":15,
+                    "max":1440
+                }
+            }
+        },
+        "Heartbeat":{
+            "menu": "Configuration",
+            "callback": "heartbeat",
+            "parameters" :{
+                "Enable": {
+                    "type": "Boolean",
+                    "description": "是否启用心跳\n用于定时上报播放状态\n=================",
+                    "default": true
+                },
+                "Second": {
+                    "type": "Integer",
+                    "description": "心跳间隔秒数\n=================",
+                    "default": 1,
+                    "min":1,
+                    "max":1440
+                }
+            }
+        },
+        "Speed Toast":{ 
+            "menu": "Configuration",
+            "callback": "speedToast",
+            "parameters" :{
+                "Speed Toast": {
+                    "type": "Boolean",
+                    "description": "是否在播放器端显示调速提示\n=================",
+                    "default": false
+                }
+            }
+        },
+        "Help":{
+            "menu": "Configuration",
+            "callback": "help",
+            "type": "Trigger"
+        },
+        "Debug Info":{
+            "menu": "Configuration",
+            "callback": "debugInfo",
+            "parameters" :{
+                "Overlay": {
+                    "type": "Boolean",
+                    "description": "开关左上角调试信息\n=================",
+                    "default": true
+                }
+            }
+        },
+        "Performance":{
+            "menu": "Configuration",
+            "callback": "performance",
+            "parameters" :{
+                "Performance": {
+                    "type": "Boolean",
+                    "description": "True = 启用性能优化, 高性能播放, 但 scrcpy 取不到画面\nFalse = 使用调试模式, 可以被 scrcpy 操作\n=================",
+                    "default": true
+                }
+            }
+        },
+        "3D":{
+            "menu": "",
+            "callback": "set3D",
+            "parameters" :{
+                "3D Mode": {
+                    "type": "Enum",
+                    "description": "被动立体模式\n=================",
+                    "options": {
+                        "Off": "off",
+                        "Side by Side of Left": "left",
+                        "Side by Side of Right": "right",
+                        "Top and Bottom of Top": "ou_top",
+                        "Top and Bottom of Bottom": "ou_bottom"
+                    }
+                }
+            }
+        }
+    }
+}
