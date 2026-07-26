@@ -38,7 +38,7 @@ function multicastAddress(host){
 
     if (!members) {
         local.values.getChild("multicastMembers").getChild("members").set(
-            "THERE MUST BE MEMBERS TO SWITCH MULTICAST GROUP");
+            "THERE MUST BE MEMBERS TO SWITCH MULTICAST GROUP"); //必须有成员才能切换组播组
         return;
     }
     var ips = members.trim().split("\n");
@@ -83,9 +83,13 @@ function getPlaylist() {
     local.send("/playlist/get");
 }
 
+// 图片播放时长
+function pictureDuration(duration) {
+    local.send("/playlist/picture/duration", duration);
+}
 // 设置循环模式
 function setLoop(mode){
-    local.send("/playlist/loop", mode);
+    local.send("/playlist/mode", mode);
 }
 
 // 播放列表索引
@@ -164,9 +168,9 @@ function alignmentPlay(index, position) {
     local.send("/alignment/prepare", index, position);
 }
 
-// 暂停播放
-function playFile(fileName) {
-    local.send("/play", fileName);
+// 播放文件
+function playFile(fileName, position) {
+    local.send("/play", fileName, position);
 }
 
 // 暂停当前视频
@@ -276,6 +280,17 @@ function set3D(ip, value) {
     local.sendTo(ip, port, "/3d", value);
 }
 
+function TCT(string, fontSize, location) {
+    local.send("/tct", string, fontSize, location);
+}
+
+function startupFile(fileName) {
+    local.send("/config/startup" , fileName);
+}
+
+function settings() {
+    local.send("/settings");
+}
 
 
 var memberIPs = [];             // 存储当前成员 IP, 在发现成员时维护
@@ -343,8 +358,9 @@ function updateMemberContainer() {
         }
         if (!has3D) {
             // addEnumParameter(name, description, label1, value1, label2, value2, ...)
-            var has3DParam = memberContainer.addEnumParameter("3D", "被动立体模式", 
-                 "Off", "off",
+            var has3DParam = memberContainer.addEnumParameter("3D", "被动立体模式\n---: 查询\nOff: 此选项关闭被动立体, \n主动立体或已在外部预切割, 选此项\nSide by Side of Left: 左右格式的左侧\nSide by Side of Right: 左右格式的右侧\nTop and Bottom of Top: 上下格式的上部\nTop and Bottom of Bottom: 上下格式的下部\n=============================================", 
+                "---", "",
+                "Off", "off",
                 "Side by Side of Left", "left",
                 "Side by Side of Right", "right",
                 "Top and Bottom of Top", "ou_top",
@@ -588,6 +604,7 @@ function oscEvent(address, args, originIp) {
     // /Heartbeat : 1 0 periodic 2K_29.97-Chimei-inn-RoastDuck.mp4 119779 03:41.956 29.96999
     // isPaused, isStopped 指示灯状态, 事件, 当前文件,自发上报而来
     if (address === "/Heartbeat"){
+        // /Heartbeat : 0 0 onPositionDiscontinuity(SEEK) 4K_29.97-Chimei-inn-RoastDuck.mp4 11020 03:41.955 29.97
         var port = local.parameters.oscOutputs.oscOutput.remotePort.get();  // 获取当前端口, 组播/单播统一
         var key = originIp.split(".").join(""); // 去掉 IP 中的 . 因为 chataigne 脚本访问地址没有 .
         var container = local.values.getChild(key); // 在 Values 中找到与 IP 相同的容器
@@ -757,12 +774,6 @@ function moduleValueChanged(value) {
             local.values.powerControl.setCollapsed(true);
             local.parameters.setCollapsed(true);
         }
-        if (value.name === "getProperties") {   // 查当前时间 ms
-            getProperties();
-            local.values.multicastMembers.setCollapsed(true);
-            local.values.powerControl.setCollapsed(true);
-            local.parameters.setCollapsed(true);
-        }
         if (value.name === "displayON") {powerControl("on");}
         if (value.name === "displayOFF") {powerControl("off");}
         if (value.name === "playerRestart") {powerControl("restart");}
@@ -773,7 +784,8 @@ function moduleValueChanged(value) {
         if (value.name === "schedulePowerClear") {schedulePowerClear();}
         if (value.name === "playFile") {
             var file = local.values.getChild("Alignment").getChild("File Name").get();
-            playFile(file);
+            var position = local.values.alignment.getChild("alignmentTime").get();
+            playFile(file, position);
         }
     }
 }
