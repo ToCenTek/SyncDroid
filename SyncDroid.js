@@ -461,6 +461,8 @@ function syncDrift(originIp, current_ms, fps) {
 
     if (!syncData[originIp]) syncIps.push(originIp);
 
+    if (originIP.length <= 1) reurn;
+
     // 首个设备固定为基准
     if (syncMasterIp === "") {
         syncMasterIp = originIp;
@@ -629,6 +631,9 @@ function oscEvent(address, args, originIp) {
         if (args[0] == 0 && args[1] == 0 && current_ms > 0) {
             syncDrift(originIp, current_ms, fps);
         }
+    }
+    if (address === "/Config"){
+         local.values.multicastMembers.message.set(args[0]);
     }
 
     // /kodi/error : -1 ERROR: NO ACTIVE PLAYER!!!

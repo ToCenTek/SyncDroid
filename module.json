@@ -87,6 +87,16 @@
                 "type": "Trigger",
                 "description": "切换暂停/播放\n=====================\nPause/Play"
             },
+            "Loop":{
+                "type": "Enum",
+                "description": "循环模式\noff=当前播完即停\none=单曲循环\nall=列表循环\n=====================\nLoop",
+                "options": {
+                    "---": "---",
+                    "Off": "off",
+                    "One": "one",
+                    "All": "all"
+                }
+            },
 
             "Seek":{
                 "type": "Integer",
@@ -102,17 +112,6 @@
             "Stop":{
                 "type": "Trigger",
                 "description": "停止播放, 回到主界面\n=====================\nStop"
-            },
-            "Loop":{
-                "type": "Enum",
-                "description": "循环模式: All/One/Off\n--- : 查询当前模式\n=====================\nLoop Mode.",
-                "options": {
-                    "---": "---",
-                    "Play once and stop": 0,
-                    "Single loop": 1,
-                    "Playlist loop": 2,
-                    "Random": 3
-                }
             },
             "Volume":{
                 "type": "Float",
@@ -328,6 +327,7 @@
                 }
             }
         },
+        
 
         "Play File":{
             "menu": "",
@@ -368,23 +368,6 @@
             "callback": "getPlaylist",
             "type": "Trigger"
         },
-        "Set Loop":{
-            "menu": "Playlist",
-            "callback": "setLoop",
-            "parameters" :{
-                "Loop": {
-                    "type": "Enum",
-                    "description": "循环模式.\n--- : 查询当前模式\nLoop Mode.",
-                    "options": {
-                        "---": "---",
-                        "Play once and stop": 0,
-                        "Single loop": 1,
-                        "Playlist loop": 2,
-                        "Random": 3
-                    }
-                }
-            }
-        },
         "Play Index":{
             "menu": "Playlist",
             "callback": "PlayIndex",
@@ -407,45 +390,39 @@
             "callback": "playPrev",
             "type": "Trigger"
         },
-        "Playlist Add":{
-            "menu": "Playlist",
-            "callback": "playlistAdd",
-            "parameters" :{
-                "File Name": {
-                    "type": "String",
-                    "description": "要添加到播放列表的文件名",
-                    "default": "4K_29.97-Chimei-inn-RoastDuck.mp4"
-                }
-            }
-        },
-        "Playlist Remove":{
-            "menu": "Playlist",
-            "callback": "playlistRemove",
-            "parameters" :{
-                "Index": {
-                    "type": "Integer",
-                    "description": "要删除的索引",
-                    "default": 0,
-                    "min":0
-                }
-            }
-        },
-        "Playlist Clear":{
-            "menu": "Playlist",
-            "callback": "playlistClear",
-            "type": "Trigger"
-        },
-        "Playlist Reload":{
-            "menu": "Playlist",
-            "description": "重新扫描视频(固定排序)",
-            "callback": "playlistReload",
-            "type": "Trigger"
-        },
         "Playlist Directory Check":{
             "menu": "Playlist",
             "description": "查看视频目录",
             "callback": "playlistDirectoryCheck",
             "type": "Trigger"
+        },
+        "Picture Duration":{
+            "menu": "Playlist",
+            "callback": "pictureDuration",
+            "parameters" :{
+                "Picture Duration": {
+                    "type": "Integer",
+                    "description": "图片显示时间, 单位: 秒\n=====================\nPicture Duration",
+                    "default": 5,
+                    "min":1
+                }
+            }
+        },
+        "Set Loop":{
+            "menu": "",
+            "callback": "setLoop",
+            "parameters" :{
+                "Loop Mode": {
+                    "type": "Enum",
+                    "description": "循环模式\noff=当前播完即停\none=单曲循环\nall=列表循环",
+                    "options": {
+                        "---": "---",
+                        "Off": "off",
+                        "One": "one",
+                        "All": "all"
+                    }
+                }
+            }
         },
 
         "Volume":{
@@ -657,6 +634,17 @@
                 }
             }
         },
+        "Startup File":{
+            "menu": "Configuration",
+            "callback": "startupFile",
+            "parameters" :{
+                "Startup File": {
+                    "type": "String",
+                    "description": "输入一个有效的文件名, \n将它设置为开机自动播放\n=================",
+                    "default": "4K_29.97-Chimei-inn-RoastDuck.mp4"
+                }
+            }
+        },
         "3D":{
             "menu": "",
             "callback": "set3D",
@@ -673,6 +661,36 @@
                     }
                 }
             }
+        },
+        "tct":{
+            "menu": "",
+            "callback": "TCT",
+            "parameters" :{
+                "String": {
+                    "type": "String",
+                    "description": "叠加显示的文字\n支持中文, 即使 Cahtaigne 中显示为乱码\n要清除, 发送空字符或空格=================",
+                    "default": "ToCenTek DEMO"
+                },
+                "Font Size":{
+                    "type": "Integer",
+                    "description": "字号\n=================",
+                    "default": 64,
+                    "min":12,
+                    "max":256
+                },
+                "Location":{
+                    "type":"Integer",
+                    "description": "位置, 0 = 中心, 1 = 左上, 2 = 右上, 3 = 左下, 4 = 右下\n=================",
+                    "default": 0,
+                    "min":0,
+                    "max":4
+                }
+            }
+        },
+        "Settings":{
+            "menu": "Configuration",
+            "description": "打开系统设置菜单",
+            "callback": "settings"
         }
     }
 }
