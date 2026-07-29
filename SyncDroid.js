@@ -64,11 +64,11 @@ function multicastPort(port){
 }
 
 // 组成员管理, 向成员单播: /member, join|leave
-function membersManager(memberIP, args) {
-    var port = local.parameters.oscOutputs.oscOutput.remotePort.get();
+function membersManager(memberIP, args, newAddress, newReplyPort) {
+    var port = local.parameters.oscOutputs.oscOutput.remotePort.get(); // 组播/单播同一端口
     var address = "/member";
-    local.sendTo(memberIP, port, address, args);
-    script.log(memberIP, port, address, args);
+    local.sendTo(memberIP, port, address, args, newAddress, newReplyPort);
+    script.log(memberIP, port, address, args, newAddress, newReplyPort);
 
     util.delayThreadMS(100);    // 延时
     discoverMulticastMembers();
@@ -701,7 +701,9 @@ function moduleValueChanged(value) {
         if (value.name === "manager") {
             var memberIP = local.values.getChild("multicastMembers").getChild("memberIP").get();
             var action = value.get();
-            membersManager(memberIP, action);
+            var newAddress = local.parameters.oscOutputs.oscOutput.remoteHost.get();    // 新组播地址
+            var newReplyPort = local.parameters.oscInput.localPort.get();   // 新上报端口
+            membersManager(memberIP, action, newAddress, newReplyPort);
             // 成员加入自动构建播放列表, 离开不构建
             if (action === "join") {
                 local.values.getChild("multicastMembers").setCollapsed(true);
