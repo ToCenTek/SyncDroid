@@ -55,8 +55,8 @@
             "Alignment Time":{
                 "type": "Integer",
                 "description": "设置对齐时间点, 单位: ms\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nAlignment time",
-                "default": 1102,
-                "min":1
+                "default": 0,
+                "min":0
             },
             "Index":{
                 "type": "Integer",
@@ -304,8 +304,8 @@
                 "Alignment Time":{
                     "type": "Integer",
                     "description": "设置对齐播放的对齐点, 单位: ms\n设置一个 GOP 的整数倍 + 1 或稍大,\n能得到较好的对齐结果\n=====================\nAlignment play delay",
-                    "default": 1102,
-                    "min":1
+                    "default": 0,
+                    "min":0
                 },
                 "Alignment Delay":{
                     "type": "Integer",
@@ -691,6 +691,18 @@
             "menu": "Configuration",
             "description": "打开系统设置菜单",
             "callback": "settings"
+        },
+        "License":{
+            "menu": "Configuration",
+            "description": "续期/激活",
+            "callback": "license",
+            "parameters" :{
+                "IP Address": {
+                    "type": "String",
+                    "description": "要授权的节点 IP 地址\n=================",
+                    "default": "10.0.0.45"
+                }
+            }
         }
     }
 }

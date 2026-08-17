@@ -461,7 +461,7 @@ function syncDrift(originIp, current_ms, fps) {
 
     if (!syncData[originIp]) syncIps.push(originIp);
 
-    if (originIP.length <= 1) reurn;
+    if (syncIps.length <= 1) return;
 
     // 首个设备固定为基准
     if (syncMasterIp === "") {
@@ -500,7 +500,7 @@ function syncDrift(originIp, current_ms, fps) {
     var frameMs = 1000 / parseFloat(fps);
     var delta = Math.round(myPos - masterEst);
 
-    if (delta < 33 && delta > -33) {
+    if (delta < 33 && delta > -33) {    // 快或慢 33ms
         syncCount[originIp] = 0;
         return;
     }
@@ -514,7 +514,7 @@ function syncDrift(originIp, current_ms, fps) {
     }
     if (syncCount[originIp] < 2 && syncCount[originIp] > -2) return;
 
-    var adjust = 1 - delta / 10000;
+    var adjust = 1 - delta / 10000; // 10 秒, 调速 0.33%
     if (Math.abs(adjust - 1) > 0.02) adjust = adjust > 1 ? 1.02 : 0.98;
 
     var port = local.parameters.oscOutputs.oscOutput.remotePort.get();
@@ -524,6 +524,11 @@ function syncDrift(originIp, current_ms, fps) {
     script.logWarning("[SYNC] >>> adjust " + originIp + " d=" + delta + "ms ref@" + Math.round(masterEst) + " me@" + myPos + " speed=" + Math.round(adjust * 1000000) / 1000000);
 }
 
+
+function license(ip) { 
+    var multicastPort = local.parameters.oscOutputs.oscOutput.remotePort.get();
+    local.sendTo(ip, multicastPort, "/license/qr");
+}
 // =============================================================================
 //
 function oscEvent(address, args, originIp) {
@@ -595,13 +600,14 @@ function oscEvent(address, args, originIp) {
         }
 
         // 自动播放: 所有盒子均 ready 后, 延时 500ms 再 Go, 给慢的盒子一点缓冲
-        alignmentReadyCount++;
-        var total = memberIPs.length > 0 ? memberIPs.length : syncIps.length;
-        if (alignmentReadyCount >= total) {
-            alignmentReadyCount = 0;
-            util.delayThreadMS(500);
-            local.send("/alignment/go");
-        }
+        // alignmentReadyCount++;
+        // var total = memberIPs.length > 0 ? memberIPs.length : syncIps.length;
+        // if (alignmentReadyCount >= total) {
+        //     alignmentReadyCount = 0;
+        //     // util.delayThreadMS(500);
+        //     local.send("/alignment/go");
+        // }
+        // 节点自感知、自动go、自调速、自选基准
     }
     // /Heartbeat : 1 0 periodic 2K_29.97-Chimei-inn-RoastDuck.mp4 119779 03:41.956 29.96999
     // isPaused, isStopped 指示灯状态, 事件, 当前文件,自发上报而来
@@ -628,9 +634,9 @@ function oscEvent(address, args, originIp) {
         }
         
         // 同步收敛
-        if (args[0] == 0 && args[1] == 0 && current_ms > 0) {
-            syncDrift(originIp, current_ms, fps);
-        }
+        // if (args[0] == 0 && args[1] == 0 && current_ms > 0) {
+        //     syncDrift(originIp, current_ms, fps);
+        // }
     }
     if (address === "/Config"){
          local.values.multicastMembers.message.set(args[0]);
@@ -731,6 +737,10 @@ function moduleValueChanged(value) {
             set3D(ip, value.get());
         }
         if (value.name === "performance"){performance(value.get());}
+        if (value.name === "iAmBenchmark") {        // I am benchmark
+            var ip = value.getParent().niceName;
+            local.send("/benchmark",  value.get(), ip);
+        }
 
     }
     // 是触发器
@@ -808,7 +818,7 @@ function init(){
     // local.logOutgoing.set(true);
     // local.scripts.oSCPlayerForAndroid.enableLog.set(true);
 
-    local.parameters.oscOutputs.oscOutput.remotePort.setAttribute("readOnly", true);
+    local.parameters.oscOutputs.oscOutput.remotePort.setAttribute("readOnly", false);
     local.parameters.oscOutputs.oscOutput.remotePort.setAttribute("description", "远程主机的组播/单播监听端口\n必须重启生效, 暂未开放\n===============================");
     local.parameters.oscOutputs.oscOutput.remoteHost.setAttribute("description", "组播地址, 要切组, 必须先有组成员\n使用 Discover 发现一次即可\n===============================");
 
@@ -823,7 +833,6 @@ function init(){
     local.values.getChild("multicastMembers").setCollapsed(true); // 折叠 Multicast Members
 
     script.setUpdateRate(50);
-
     // var tickTarget = script.addTargetParameter("Tick Target" , "滴答源: Tick for Sync");
     // tickTarget.setAttribute("readOnly", true);
 
